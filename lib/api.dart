@@ -5,15 +5,16 @@ import 'package:hotelmgm/models/response.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
+// might require auth related info later
+Map<String, dynamic>? authInfo;
+
 // Global variables for API endpoint and headers
 const String apiBaseUrl = 'https://hotelmgm.azurewebsites.net/api';
-const Map<String, String> defaultHeaders = {
+Map<String, String> defaultHeaders = {
   'accept': '*/*',
   'Content-Type': 'application/json',
   'origin': 'https://hotelmgm.azurewebsites.net',
 };
-
-Map<String, dynamic>? authInfo;
 
 ApiResponse responseParse(Response response) {
   return ApiResponse.fromJson(
@@ -93,6 +94,11 @@ Future<String?> authenticateUser(String email, String password) async {
   final response = await http.post(url, headers: defaultHeaders, body: body);
   if (response.statusCode == 200) {
     authInfo = responseParse(response).data;
+    // add token to headers for future
+    defaultHeaders = {
+      ...defaultHeaders,
+      "Authorization": authInfo?["jwToken"],
+    };
     return null;
   } else {
     return responseParse(response).message;
@@ -102,5 +108,6 @@ Future<String?> authenticateUser(String email, String password) async {
 void main() async {
   // var resp = await http.post(Uri.parse('https://example.com'), body: {'test': 'test'});
   // log(resp.body);
-  registerUser('first', 'last', 'test08@example.com', 'test08', 'Testtest1!');
+  await authenticateUser('test08@example.com', 'Testtest1!');
+  // print(authInfo?["jwToken"]);
 }

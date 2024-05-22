@@ -2,24 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:hotelmgm/api.dart';
 
-const users = {
-  'dribbble@gmail.com': '12345',
-  'hunter@gmail.com': 'hunter',
-};
-
 class LoginPage extends StatelessWidget {
-  Duration get loginTime => const Duration(milliseconds: 2250);
+  Duration get loginTime => const Duration(milliseconds: 100);
 
   Future<String?> _authUser(LoginData data) {
     debugPrint('Name: ${data.name}, Password: ${data.password}');
     return Future.delayed(loginTime).then((_) {
-      if (!users.containsKey(data.name)) {
-        return 'User not exists';
-      }
-      if (users[data.name] != data.password) {
-        return 'Password does not match';
-      }
-      return null;
+      return authenticateUser(
+        data.name,
+        data.password,
+      );
     });
   }
 
@@ -27,12 +19,11 @@ class LoginPage extends StatelessWidget {
     debugPrint(
         'Signup: ${data.name}, ${data.password}, ${data.additionalSignupData},');
     return registerUser(
-      data.additionalSignupData!["Name"]!,
-      data.additionalSignupData!["Surname"]!,
-      data.name!,
-      data.additionalSignupData!["Username"]!,
-      data.password!
-    );
+        data.additionalSignupData!["Name"]!,
+        data.additionalSignupData!["Surname"]!,
+        data.name!,
+        data.additionalSignupData!["Username"]!,
+        data.password!);
   }
 
   Future<String?> _recoverPassword(String name) {
