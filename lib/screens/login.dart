@@ -30,10 +30,7 @@ class LoginPage extends StatelessWidget {
     debugPrint('Name: $name');
     return Future.delayed(loginTime).then(
       (_) {
-        if (!users.containsKey(name)) {
-          return 'User not exists';
-        }
-        return null;
+        return requestPasswordReset(name);
       },
     );
   }

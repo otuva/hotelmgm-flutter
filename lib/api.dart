@@ -16,6 +16,8 @@ Map<String, String> defaultHeaders = {
   'origin': 'https://hotelmgm.azurewebsites.net',
 };
 
+Map<String, String>? authHeaders;
+
 ApiResponse responseParse(Response response) {
   return ApiResponse.fromJson(
       jsonDecode(response.body) as Map<String, dynamic>);
@@ -95,7 +97,7 @@ Future<String?> authenticateUser(String email, String password) async {
   if (response.statusCode == 200) {
     authInfo = responseParse(response).data;
     // add token to headers for future
-    defaultHeaders = {
+    authHeaders = {
       ...defaultHeaders,
       "Authorization": authInfo?["jwToken"],
     };
@@ -105,9 +107,22 @@ Future<String?> authenticateUser(String email, String password) async {
   }
 }
 
+Future<String?> requestPasswordReset(String email) async {
+  final url = Uri.parse('${apiBaseUrl}/Account/forgot-password');
+  final body = json.encode({'email': email});
+
+  final response = await http.post(url, headers: defaultHeaders, body: body);
+
+  if (response.statusCode == 200) {
+    return null;
+  } else {
+    return responseParse(response).message;
+  }
+}
+
 void main() async {
   // var resp = await http.post(Uri.parse('https://example.com'), body: {'test': 'test'});
   // log(resp.body);
-  await authenticateUser('test08@example.com', 'Testtest1!');
-  // print(authInfo?["jwToken"]);
+  var resp = await requestPasswordReset('test08@example.com');
+  print(resp);
 }
